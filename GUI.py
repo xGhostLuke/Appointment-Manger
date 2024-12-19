@@ -1,7 +1,7 @@
 import tkinter as tk
+import os
 from tkinter import ttk
 from Task import Task
-
 
 class GUI:
     def __init__(self):
@@ -12,7 +12,7 @@ class GUI:
         self.root.configure(bg="#f0f8ff") 
         self.root.title("ToDo List")
 
-        self.root.tk.call('source', 'forest-dark.tcl')
+        self.root.tk.call('source', os.path.join('forest-dark.tcl'))
         ttk.Style().theme_use('forest-dark')
 
         self.task_entry = ttk.Entry(self.root, width=40, font=("Arial", 14))
