@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ToDo List</title>
-        <link rel="stylesheet" href="/css/style.css">
-        <script src="/js/main.js"></script>
-    </head>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/main.js" defer></script>
+</head>
+<body>
     <div class="header">
         <p>ToDoList by Lukas Reißland</p>
     </div>
-
-    <body>
-        <h1 class="title">ToDo List</h1>
-        <div class="inputFields">
-            <input id="taskInput" type="text" placeholder="Enter a task" />
-            <button onclick="addTask()">Add Task</button>
-        </div>
-    </body>
-
+    <h1 class="title">ToDo List</h1>
+    <div class="inputFields">
+        <input id="taskInput" type="text" placeholder="Titel" />
+        <input id="descriptionInput" type="text" placeholder="Beschreibung" />
+        <input id="locationInput" type="text" placeholder="Ort" />
+        <input id="dateInput" type="date" />
+        <input id="deadlineInput" type="date" placeholder="Anmeldefrist" />
+        <button onclick="addTask()">Add Task</button>
+    </div>    
     <div class="tasks">
         <ul id="taskList"></ul>
     </div>
-
     <div class="selected_task">
         <p>show info of selected task here</p>
         <p>this is just a placeholder for now</p>
     </div>
+</body>
 </html>

@@ -8,23 +8,36 @@ async function fetchTasks() {
     tasks.forEach((task, index) => {
         taskList.innerHTML += `
             <li>
-                ${task}
-                <button onclick="markDone(${index})">Mark Done</button>
-                <button onclick="deleteTask(${index})">Delete</button>
+                <strong>${task.title}</strong><br>
+                Beschreibung: ${task.description || "N/A"}<br>
+                Ort: ${task.location || "N/A"}<br>
+                Datum: ${task.date || "N/A"}<br>
+                Anmeldefrist: ${task.deadline || "N/A"}<br>
+                Status: ${task.status}<br>
+                <button onclick="markDone(${task.id})">Mark Done</button>
+                <button onclick="deleteTask(${task.id})">Delete</button>
             </li>`;
     });
 }
 
 async function addTask() {
-    const taskInput = document.getElementById('taskInput');
-    const title = taskInput.value.trim();
+    const title = document.getElementById('taskInput').value.trim();
+    const description = document.getElementById('descriptionInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const date = document.getElementById('dateInput').value;
+    const deadline = document.getElementById('deadlineInput').value;
+
     if (title) {
         await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title })
+            body: JSON.stringify({ title, description, location, date, deadline })
         });
-        taskInput.value = '';
+        document.getElementById('taskInput').value = '';
+        document.getElementById('descriptionInput').value = '';
+        document.getElementById('locationInput').value = '';
+        document.getElementById('dateInput').value = '';
+        document.getElementById('deadlineInput').value = '';
         fetchTasks();
     }
 }
