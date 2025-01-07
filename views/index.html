@@ -9,23 +9,31 @@
 </head>
 <body>
     <div class="header">
-        <p>ToDoList by Lukas Reißland</p>
+        <h1>ToDo List</h1>
     </div>
-    <h1 class="title">ToDo List</h1>
+    
     <div class="inputFields">
-        <input id="taskInput" type="text" placeholder="Titel" />
-        <input id="descriptionInput" type="text" placeholder="Beschreibung" />
-        <input id="locationInput" type="text" placeholder="Ort" />
-        <input id="dateInput" type="date" />
-        <input id="deadlineInput" type="date" placeholder="Anmeldefrist" />
-        <button onclick="addTask()">Add Task</button>
-    </div>    
-    <div class="tasks">
-        <ul id="taskList"></ul>
+        <input type="text" placeholder="Titel" />
+        <input type="text" placeholder="Beschreibung" />
+        <input type="text" placeholder="Ort" />
+        <input type="date" />
+        <input type="date" />
+        <button>Add Task</button>
     </div>
-    <div class="selected_task">
-        <p>show info of selected task here</p>
-        <p>this is just a placeholder for now</p>
+    
+    <div class="container">
+        <!-- Task List (Left) -->
+        <div class="tasks">
+            <ul></ul>
+        </div>
+    
+        <!-- Task Details (Right) -->
+        <div class="selected_task">
+            <h2>Task Details</h2>
+            <p>Select a task to view details</p>
+        </div>
     </div>
+    
+    
 </body>
 </html>

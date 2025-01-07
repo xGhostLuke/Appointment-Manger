@@ -1,3 +1,4 @@
+/* Reset and base styles */
 * {
     margin: 0;
     padding: 0;
@@ -12,12 +13,12 @@ body {
     color: #2c3e50;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
     height: 100vh;
     font-size: 16px;
 }
 
+/* Header styles */
 .header {
     width: 100%;
     background-color: #6a7fd1;
@@ -27,19 +28,20 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Main title */
 .title {
-    padding-top: 20px;
     font-size: 48px;
     color: #000000;
     letter-spacing: 2px;
     font-weight: 600;
     text-align: center;
+    margin: 20px 0;
 }
 
+/* Form section (top-center) */
 .inputFields {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     font-size: 18px;
     margin-top: 10px;
@@ -58,7 +60,6 @@ input, button {
 }
 
 input {
-    margin-bottom: 15px;
     background-color: #ffffff;
     transition: border-color 0.3s ease-in-out;
 }
@@ -85,78 +86,110 @@ button:active {
     background-color: #4a5c9f;
 }
 
-ul {
+/* Main layout container */
+.container {
+    display: flex;
+    justify-content: space-between;
     align-items: flex-start;
-    list-style-type: none;
-    padding: 20px 10px;
-    margin-top: 0;
     width: 100%;
-    max-width: 400px;
-    background-color: #ffa07a;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-    max-height: calc(100vh - 50px);
+    max-width: 1200px;
+    margin-top: 20px;
+    gap: 20px;
 }
 
-ul::-webkit-scrollbar {
-    width: 8px;
-}
-
-ul::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-ul::-webkit-scrollbar-thumb {
-    background: #6a7fd1;
-    border-radius: 10px;
-}
-
-ul::-webkit-scrollbar-thumb:hover {
-    background: #5a6cb4;
-}
-
-li {
-    padding: 20px;
-    border-bottom: 1px solid #ccc;
-    font-size: 20px;
-}
-
-li:last-child {
-    border-bottom: none;
-}
-
-li:hover {
-    background-color: #ffe4b5;
-    cursor: pointer;
-}
-
+/* Left pane: Task list */
 .tasks {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    position: fixed;
-    left: 20px;
-    top: 50px;
+    position: absolute; /* Change from fixed to absolute for better control */
+    left: 5%;
+    top: 20%; /* Move up */
     width: 300px;
-    max-height: calc(100vh - 50px);
+    max-height: 60%;
     overflow-y: auto;
+    padding: 10px; /* Add some padding for aesthetics */
+    margin: 0;
+    color: black;
+    background-color: #ffa07a;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tasks ul {
+    list-style-type: none;
     padding: 0;
     margin: 0;
+    width: 100%;
 }
+
+.tasks li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tasks li:hover {
+    background-color: #ffe4b5;
+}
+
+/* Right pane: Selected task details */
 
 .selected_task {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    position: fixed;
-    right: 20px;
-    top: 50px;
+    position: absolute; /* Change from fixed to absolute for better control */
+    right: 5%;
+    top: 20%; /* Move up */
     width: 300px;
-    max-height: calc(100vh - 50px);
+    max-height: 60%;
     overflow-y: auto;
-    padding: 0;
+    padding: 10px; /* Add some padding for aesthetics */
     margin: 0;
     color: black;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.selected_task h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.selected_task p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.selected_task p strong {
+    font-weight: bold;
+    color: #6a7fd1;
+}
+
+/* Scrollbar customization */
+.tasks::-webkit-scrollbar, .selected_task::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tasks::-webkit-scrollbar-track, .selected_task::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.tasks::-webkit-scrollbar-thumb, .selected_task::-webkit-scrollbar-thumb {
+    background: #6a7fd1;
+    border-radius: 10px;
+}
+
+.tasks::-webkit-scrollbar-thumb:hover, .selected_task::-webkit-scrollbar-thumb:hover {
+    background: #5a6cb4;
 }

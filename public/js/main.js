@@ -1,59 +1,92 @@
-const API_URL = '/tasks';
+    
+// Get references to elements
+const taskList = document.querySelector(".tasks ul");
+const taskDetails = document.querySelector(".selected_task");
+const addTaskButton = document.querySelector(".inputFields button"); // Fix selector
+const inputs = document.querySelectorAll(".inputFields input");
 
-async function fetchTasks() {
-    const response = await fetch(API_URL);
-    const tasks = await response.json();
-    const taskList = document.getElementById('taskList');
-    taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
-        taskList.innerHTML += `
-            <li>
-                <strong>${task.title}</strong><br>
-                Beschreibung: ${task.description || "N/A"}<br>
-                Ort: ${task.location || "N/A"}<br>
-                Datum: ${task.date || "N/A"}<br>
-                Anmeldefrist: ${task.deadline || "N/A"}<br>
-                Status: ${task.status}<br>
-                <button onclick="markDone(${task.id})">Mark Done</button>
-                <button onclick="deleteTask(${task.id})">Delete</button>
-            </li>`;
-    });
-}
+// Tasks array to store task data
+let tasks = [];
 
-async function addTask() {
-    const title = document.getElementById('taskInput').value.trim();
-    const description = document.getElementById('descriptionInput').value.trim();
-    const location = document.getElementById('locationInput').value.trim();
-    const date = document.getElementById('dateInput').value;
-    const deadline = document.getElementById('deadlineInput').value;
+// Function to add a task
+addTaskButton.addEventListener("click", () => {
+    // Get input values
+    const title = inputs[0].value;
+    const description = inputs[1].value;
+    const location = inputs[2].value;
+    const deadline = inputs[3].value;
+    const registrationDeadline = inputs[4].value;
 
-    if (title) {
-        await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, description, location, date, deadline })
-        });
-        document.getElementById('taskInput').value = '';
-        document.getElementById('descriptionInput').value = '';
-        document.getElementById('locationInput').value = '';
-        document.getElementById('dateInput').value = '';
-        document.getElementById('deadlineInput').value = '';
-        fetchTasks();
+    // Basic validation
+    if (!title || !deadline) {
+        alert("Please provide both Title and Deadline!");
+        return;
     }
-}
 
-async function markDone(taskId) {
-    await fetch(`${API_URL}/${taskId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: '[DONE]' })
+    // Create task object
+    const task = {
+        title,
+        description,
+        location,
+        deadline,
+        registrationDeadline,
+        status: "WIP",
+    };
+
+    // Add task to the list
+    tasks.push(task);
+
+    // Update UI
+    renderTaskList();
+
+    // Clear inputs
+    inputs.forEach((input) => (input.value = ""));
+});
+
+// Function to render tasks
+function renderTaskList() {
+    taskList.innerHTML = ""; // Clear existing tasks
+    tasks.forEach((task, index) => {
+        // Create a list item
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <strong>${task.title}</strong><br>
+            Status: ${task.status}<br>
+            Deadline: ${task.deadline}
+        `;
+
+        // Add event listener to display task details
+        listItem.addEventListener("click", () => displayTaskDetails(index));
+        taskList.appendChild(listItem);
     });
-    fetchTasks();
 }
 
-async function deleteTask(taskId) {
-    await fetch(`${API_URL}/${taskId}`, { method: 'DELETE' });
-    fetchTasks();
+// Function to display task details
+function displayTaskDetails(index) {
+    const task = tasks[index];
+    taskDetails.innerHTML = `
+        <h2>Task Details</h2>
+        <p><strong>Title:</strong> ${task.title}</p>
+        <p><strong>Description:</strong> ${task.description}</p>
+        <p><strong>Location:</strong> ${task.location}</p>
+        <p><strong>Deadline:</strong> ${task.deadline}</p>
+        <p><strong>Registration Deadline:</strong> ${task.registrationDeadline}</p>
+        <p><strong>Status:</strong> ${task.status}</p>
+        <button onclick="markTaskDone(${index})">Mark Done</button>
+        <button onclick="deleteTask(${index})">Delete</button>
+    `;
 }
 
-fetchTasks();
+// Function to mark a task as done
+function markTaskDone(index) {
+    tasks[index].status = "Done";
+    renderTaskList();
+    taskDetails.innerHTML = ""; // Clear task details
+}
+
+// Function to delete a task
+function deleteTask(index) {
+    tasks.splice(index, 1); // Remove the task
+    renderTaskList();
+    taskDetails.innerHTML = ""; // Clear task details
+}
