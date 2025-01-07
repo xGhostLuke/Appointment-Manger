@@ -2,9 +2,14 @@ const taskList = document.querySelector(".tasks ul");
 const taskDetails = document.querySelector(".selected_task");
 const addTaskButton = document.querySelector(".inputFields button");
 const inputs = document.querySelectorAll(".inputFields input");
+const logoutButton = document.querySelector(".logoutButton")
 
 let tasks = [];
 let nextId = 1;
+
+logoutButton.addEventListener("click", () => {
+    window.location.href = '/';
+});
 
 addTaskButton.addEventListener("click", async () => {
     const title = inputs[0].value;

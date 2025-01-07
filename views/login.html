@@ -1,0 +1,38 @@
+<!-- login-register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <link rel="stylesheet" href="/css/login_style.css">
+    <script src="/js/login.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="loginForm">
+                <label>Email</label>
+                <input type="email" id="loginEmail">
+                <label>Password</label>
+                <input type="password" id="loginPassword">
+                <button type="submit">Login</button>
+            </form>
+            
+            <form id="registerForm" style="display: none;">
+                <label>Email</label>
+                <input type="email" id="registerEmail">
+                <label>Password</label>
+                <input type="password" id="registerPassword">
+                <label>Confirm Password</label>
+                <input type="password" id="registerConfirmPassword">
+                <button type="submit">Register</button>
+            </form>
+            
+
+            <button id="toggleFormButton">Don't have an account? Register</button>
+        </div>
+    </div>
+</body>
+</html>

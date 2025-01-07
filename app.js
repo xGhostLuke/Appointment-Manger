@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const Task = require('./models/task');
+const User = require('./models/user')
 const app = express();
+const bcrypt = require('bcrypt')
 
 mongoose.connect('mongodb://localhost:27017/tasksDB', {})
   .then(() => {
@@ -16,6 +18,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+app.get('/taskpage', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
@@ -106,6 +112,51 @@ app.delete('/tasks/:task_id', async (req, res) => {
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete task' });
+  }
+});
+
+app.post('/register', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return res.status(400).json({ error: 'Email is already registered' });
+      }
+
+      const user = new User({ email, password });
+      await user.save();
+      res.json({ success: true });
+  } catch (err) {
+      console.error('Error registering user:', err);
+      res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(400).json({ error: 'User not found' });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(password, user.password);
+      if (isPasswordCorrect) {
+          res.json({ success: true });
+      } else {
+          res.status(400).json({ error: 'Invalid password' });
+      }
+  } catch (err) {
+      console.error('Error logging in:', err);
+      res.status(500).json({ error: 'Login failed' });
   }
 });
 

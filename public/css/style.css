@@ -205,3 +205,19 @@ button:active {
     font-weight: bold !important;
     border: 1px solid #ff0800 !important;
 }
+
+.logoutButton {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    padding: 10px 20px;
+    background-color: #0033ff;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+}
+
+
