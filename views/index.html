@@ -13,13 +13,23 @@
     </div>
     
     <div class="inputFields">
-        <input type="text" placeholder="Titel" />
-        <input type="text" placeholder="Beschreibung" />
-        <input type="text" placeholder="Ort" />
-        <input type="date" />
-        <input type="date" />
-        <button>Add Task</button>
-    </div>
+    <label for="title">Title</label>
+    <input type="text" id="title">
+    
+    <label for="description">Description</label>
+    <input type="text" id="description">
+
+    <label for="location">Location</label>
+    <input type="text" id="location">
+
+    <label for="deadline">Deadline</label>
+    <input type="date" id="deadline">
+    
+    <label for="registrationDeadline">Registration Deadline</label>
+    <input type="date" id="registrationDeadline"> <!-- Ensure this field exists -->
+    <button>Add Task</button>
+</div>
+
     
     <div class="container">
         <!-- Task List (Left) -->
