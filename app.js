@@ -5,6 +5,7 @@ const Task = require('./models/task');
 const User = require('./models/user')
 const app = express();
 const bcrypt = require('bcrypt')
+var userId = 0;
 
 mongoose.connect('mongodb://localhost:27017/tasksDB', {})
   .then(() => {
@@ -26,32 +27,43 @@ app.get('/taskpage', (req, res) => {
 });
 
 app.get('/tasks', async (req, res) => {
+
+  if (!userId) {
+    return res.status(403).json({ error: 'You must be logged in to view tasks' });
+  }
+
   try {
-    const tasks = await Task.find().sort({ id: 1 });
+    const tasks = await Task.find({ userId }).sort({ id: 1 });  
     res.json(tasks);
   } catch (err) {
-    console.error("Error fetching tasks:", err);
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 });
 
+
 app.get('/tasks/:task_id', async (req, res) => {
+  const userId = req.session.userId;
   const taskId = parseInt(req.params.task_id, 10);
 
+  if (!userId) {
+    return res.status(403).json({ error: 'You must be logged in to view task details' });
+  }
+
   try {
-    const task = await Task.findOne({ id: taskId });
+    const task = await Task.findOne({ id: taskId, userId });
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return res.status(404).json({ error: 'Task not found or you are not authorized to view this task' });
     }
+
     res.json(task);
   } catch (err) {
-    console.error('Error fetching task:', err);
     res.status(500).json({ error: 'Failed to fetch task' });
   }
 });
 
 app.post('/tasks', async (req, res) => {
   const { title, description, location, registrationDeadline, deadline } = req.body;
+  
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
@@ -64,19 +76,20 @@ app.post('/tasks', async (req, res) => {
       id: newId,
       status: '[WIP]',
       title,
-      description: description || '',
-      location: location || '',
-      registrationDeadline: registrationDeadline || '',
-      deadline: deadline || '',
+      description,
+      location,
+      registrationDeadline,
+      deadline,
+      userId,  // Associate the task with the logged-in user
     });
 
     const savedTask = await newTask.save();
     res.status(201).json(savedTask);
   } catch (err) {
-    console.error('Error saving task:', err);
     res.status(500).json({ error: 'Failed to save task' });
   }
 });
+
 
 app.put('/tasks/:task_id', async (req, res) => {
   const taskId = parseInt(req.params.task_id, 10);
@@ -129,6 +142,7 @@ app.post('/register', async (req, res) => {
 
       const user = new User({ email, password });
       await user.save();
+      userId = user._id; 
       res.json({ success: true });
   } catch (err) {
       console.error('Error registering user:', err);
@@ -150,6 +164,7 @@ app.post('/login', async (req, res) => {
 
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (isPasswordCorrect) {
+          userId = user._id; 
           res.json({ success: true });
       } else {
           res.status(400).json({ error: 'Invalid password' });

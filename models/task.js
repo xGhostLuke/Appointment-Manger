@@ -8,6 +8,7 @@ const taskSchema = new mongoose.Schema({
   location: { type: String },
   registrationDeadline: { type: String },
   deadline: { type: String },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 const Task = mongoose.model('Task', taskSchema);
