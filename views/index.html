@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,43 +8,40 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/main.js" defer></script>
 </head>
+
 <body>
     <div class="header">
         <h1>ToDo List</h1>
     </div>
-    
+
     <div class="inputFields">
-    <label for="title">Title</label>
-    <input type="text" id="title">
-    
-    <label for="description">Description</label>
-    <input type="text" id="description">
+        <label for="title">Title</label>
+        <input type="text" id="title">
 
-    <label for="location">Location</label>
-    <input type="text" id="location">
+        <label for="description">Description</label>
+        <input type="text" id="description">
 
-    <label for="deadline">Deadline</label>
-    <input type="date" id="deadline">
-    
-    <label for="registrationDeadline">Registration Deadline</label>
-    <input type="date" id="registrationDeadline"> <!-- Ensure this field exists -->
-    <button>Add Task</button>
-</div>
+        <label for="location">Location</label>
+        <input type="text" id="location">
 
-    
+        <label for="deadline">Deadline</label>
+        <input type="date" id="deadline">
+
+        <label for="registrationDeadline">Registration Deadline</label>
+        <input type="date" id="registrationDeadline">
+        <button>Add Task</button>
+    </div>
+
     <div class="container">
-        <!-- Task List (Left) -->
         <div class="tasks">
             <ul></ul>
         </div>
-    
-        <!-- Task Details (Right) -->
+
         <div class="selected_task">
             <h2>Task Details</h2>
             <p>Select a task to view details</p>
         </div>
     </div>
-    
-    
 </body>
+
 </html>
