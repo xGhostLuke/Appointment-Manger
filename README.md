@@ -1,1 +1,1 @@
-# ToDoList
+# Appointment Manager
