@@ -2,13 +2,12 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const Task = require('./models/task');
-const User = require('./models/user')
+const User = require('./models/user');
 const app = express();
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 var userId = 0;
 var currentUser = "";
-
-let registrations = [];
 
 mongoose.connect('mongodb://localhost:27017/tasksDB', {})
   .then(() => {
@@ -39,17 +38,15 @@ app.get('/user', (req, res) => {
   res.json({ userId });
 });
 
-
 app.get('/tasks', async (req, res) => {
   if (!userId) {
     return res.status(403).json({ error: 'You must be logged in to view tasks' });
   }
-
   try {
     const tasks = await Task.find({
       $or: [
-        { userId },  
-        { public: true } 
+        { userId },
+        { public: true }
       ]
     }).sort({ id: 1 });
 
@@ -60,15 +57,12 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
-
 app.get('/tasks/:task_id', async (req, res) => {
   const taskId = parseInt(req.params.task_id, 10);
-  
-
   try {
     const task = await Task.findOne({ id: taskId })
       .populate('participants', 'email').exec;
-      console.log("Populated Task:", task)
+    console.log("Populated Task:", task);
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
@@ -104,12 +98,11 @@ app.post('/tasks', async (req, res) => {
       time,
       registrationDeadline,
       deadline,
-      userId,  
+      userId,
       public: isPublic || false,
     });
 
     const savedTask = await newTask.save();
-
     console.log("Task created:", savedTask);
     res.status(201).json(savedTask);
   } catch (err) {
@@ -124,7 +117,7 @@ app.put('/tasks/:task_id', async (req, res) => {
 
   try {
     const task = await Task.findOne({ id: taskId });
-    
+
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
@@ -158,7 +151,6 @@ app.delete('/tasks/:task_id', async (req, res) => {
 app.get('/public-tasks', async (req, res) => {
   try {
     const publicTasks = await Task.find({ public: true });
-
     res.sendFile(path.join(__dirname, 'views', 'public.html'));
   } catch (err) {
     console.error('Error fetching public tasks:', err);
@@ -180,7 +172,7 @@ app.get('/user/email/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const user = await User.findById(userId); 
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -193,27 +185,26 @@ app.get('/user/email/:userId', async (req, res) => {
   }
 });
 
-
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    return res.status(400).json({ error: "Email and password are required" });
   }
 
   try {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-          return res.status(400).json({ error: 'Email is already registered' });
-      }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
 
-      const user = new User({ email, password });
-      await user.save();
-      userId = user._id; 
-      currentUser = email;
-      res.json({ success: true });
+    const user = new User({ email, password });
+    await user.save();
+    userId = user._id;
+    currentUser = email;
+    res.json({ success: true });
   } catch (err) {
-      console.error('Error registering user:', err);
-      res.status(500).json({ error: 'Registration failed' });
+    console.error('Error registering user:', err);
+    res.status(500).json({ error: 'Registration failed' });
   }
 });
 
@@ -221,27 +212,27 @@ app.post('/join-task/:taskId', async (req, res) => {
   const taskId = req.params.taskId;
 
   if (!userId) {
-      return res.status(403).json({ error: 'You must be logged in to participate' });
+    return res.status(403).json({ error: 'You must be logged in to participate' });
   }
 
   try {
-      const task = await Task.findOne({ id: taskId });
+    const task = await Task.findOne({ id: taskId });
 
-      if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
-      }
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
 
-      if (task.participants.includes(userId)) {
-          return res.status(400).json({ message: 'You have already joined this appointment' });
-      }
+    if (task.participants.includes(userId)) {
+      return res.status(400).json({ message: 'You have already joined this appointment' });
+    }
 
-      task.participants.push(userId);
-      await task.save();
+    task.participants.push(userId);
+    await task.save();
 
-      res.status(200).json({ message: 'Successfully joined the task' });
+    res.status(200).json({ message: 'Successfully joined the task' });
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Error joining task' });
+    console.error(err);
+    res.status(500).json({ error: 'Error joining task' });
   }
 });
 
@@ -250,49 +241,149 @@ app.post('/joinforeign/:taskId', async (req, res) => {
   const { firstName, lastName, email } = req.body;
 
   if (!firstName || !lastName || !email) {
-      return res.status(400).json({ error: "First name, last name and email are required!" });
+    return res.status(400).json({ error: "First name, last name and email are required!" });
   }
 
   try {
-      const task = await Task.findOne({ id: taskId });
-      if (!task) {
-          return res.status(404).json({ error: "Task not found" });
-      }
+    const task = await Task.findOne({ id: taskId });
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
 
-      task.foreignparticipants.push({ firstName, lastName, email});
+    task.foreignparticipants.push({ firstName, lastName, email });
+    await task.save();
 
-      await task.save();
-
-      res.status(200).json({ message: "Successfully registered for the appointment" });
+    res.status(200).json({ message: "Successfully registered for the appointment" });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    return res.status(400).json({ error: "Email and password are required" });
   }
 
   try {
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(400).json({ error: 'User not found' });
-      }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'User not found' });
+    }
 
-      const isPasswordCorrect = await bcrypt.compare(password, user.password);
-      if (isPasswordCorrect) {
-          userId = user._id; 
-          currentUser = email;
-          res.json({ success: true });
-      } else {
-          res.status(400).json({ error: 'Invalid password' });
-      }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (isPasswordCorrect) {
+      userId = user._id;
+      currentUser = email;
+      res.json({ success: true });
+    } else {
+      res.status(400).json({ error: 'Invalid password' });
+    }
   } catch (err) {
-      console.error('Error logging in:', err);
-      res.status(500).json({ error: 'Login failed' });
+    console.error('Error logging in:', err);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post("/createPublicLink/:taskId", async (req, res) => {
+  let taskId = req.params.taskId;
+
+  taskId = Number(taskId);
+
+  if (isNaN(taskId)) {
+    return res.status(400).json({ error: "Invalid task ID" });
+  }
+
+  try {
+    const task = await Task.findOne({ id: taskId });
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    if (!task.public) {
+      return res.status(400).json({ error: "Task is not public" });
+    }
+
+    if (!task.publicLink) {
+      const uniqueIdentifier = crypto.randomBytes(6).toString("hex");
+      task.publicLink = `${req.protocol}://${req.get("host")}/appointment/${uniqueIdentifier}`;
+      await task.save();
+    }
+
+    res.status(200).json({ publicLink: task.publicLink });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/appointment/:identifier', async (req, res) => {
+  const { identifier } = req.params;
+
+  try {
+    const task = await Task.findOne({ publicLink: `${req.protocol}://${req.get('host')}/appointment/${identifier}` });
+
+    if (!task) {
+      return res.status(404).send('Task not found or is not public.');
+    }
+
+    res.sendFile(path.join(__dirname, 'views', 'sharedLink.html'));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get('/appointment/:identifier/data', async (req, res) => {
+  const { identifier } = req.params;
+
+  try {
+    const task = await Task.findOne({ publicLink: `${req.protocol}://${req.get('host')}/appointment/${identifier}` });
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json({
+      title: task.title,
+      description: task.description,
+      location: task.location,
+      time: task.time,
+      deadline: task.deadline,
+      registrationDeadline: task.registrationDeadline,
+      status: task.status,
+      foreignparticipants: task.foreignparticipants || [],
+      participants: task.participants || []
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/appointment/:identifier/register', async (req, res) => {
+  const { identifier } = req.params;
+  const { firstName, lastName, email } = req.body;
+
+  try {
+    const task = await Task.findOne({ publicLink: `${req.protocol}://${req.get('host')}/appointment/${identifier}` });
+
+    if (!task) {
+      return res.status(404).json({ success: false, message: 'Task not found or is not public.' });
+    }
+
+    const participant = { firstName, lastName, email };
+    task.foreignparticipants.push(participant);
+
+    await task.save();
+
+    res.json({ success: true, message: 'Registration successful!' });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 

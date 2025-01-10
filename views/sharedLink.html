@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Details</title>
+    <link rel="stylesheet" href="/css/shared.css">
+    <script src="/js/sharedLink.js" defer></script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Appointment Manager</h1>
+        <p>by Lukas Reißland</p>
+    </div>
+
+    <div class="container">
+        <div class="selected_task">
+            <h2>Appointment Details</h2>
+            <p class=task_title id="task-title">Loading...</p>
+            <p><strong>Description:</strong> <span id="task-description">Loading...</span></p>
+            <p><strong>Location:</strong> <span id="task-location">Loading...</span></p>
+            <p><strong>Time:</strong> <span id="task-time">Loading...</span></p>
+            <p><strong>Deadline:</strong> <span id="task-deadline">Loading...</span></p>
+            <p><strong>Registration Deadline:</strong> <span id="task-registration-deadline">Loading...</span></p>
+            <p><strong>Status:</strong> <span id="task-status">Loading...</span></p>
+
+            <div class="register-form">
+                <h3>Register for this Appointment</h3>
+                <form id="appointment-registration">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name="last-name" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><a href="https://github.com/xGhostLuke/Appointment-Manger">Check the GitHub Repo here</a></p>
+    </footer>
+</body>
+
+</html>

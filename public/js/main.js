@@ -5,6 +5,8 @@ const inputs = document.querySelectorAll(".inputFields input");
 const logoutButton = document.querySelector(".logoutButton");
 const userEmail = document.getElementById("userEmail")
 
+const today = new Date().toISOString().split('T')[0];
+
 let tasks = [];
 let nextId = 1;
 let userId;
@@ -57,6 +59,9 @@ addTaskButton.addEventListener("click", async () => {
     }
 });
 
+document.getElementById('deadline').setAttribute('min', today);
+document.getElementById('registrationDeadline').setAttribute('min', today);
+
 async function getEmailByUserId(userId) {
     try {
         const response = await fetch(`/user/email/${userId}`);
@@ -107,6 +112,7 @@ async function renderTaskList() {
                 const currentDate = new Date();
                 const timeDiff = taskDeadline - currentDate;
                 const oneDayInMillis = 24 * 60 * 60 * 1000;
+                const status = task.status;
 
                 const isDeadlineSoon = timeDiff <= oneDayInMillis && timeDiff > 0;
 
@@ -118,6 +124,10 @@ async function renderTaskList() {
 
                 if (isDeadlineSoon) {
                     listItem.classList.add("highlight-deadline");
+                }
+
+                if (task.status === "canceled") {
+                    listItem.classList.add("highlight-status");
                 }
 
                 listItem.addEventListener("click", () => displayTaskDetails(task.id));
@@ -191,6 +201,13 @@ async function displayTaskDetails(taskId) {
         taskDetails.innerHTML += `
             <button onclick="markTaskDone(${task.id})">Cancel Task</button>
             <button onclick="deleteTask(${task.id})">Delete Task</button>
+        `;
+    }
+
+    if (isOwner && task.public) {
+        taskDetails.innerHTML += `
+            <button onclick="generatePublicLink(${taskId})">Create Public Link</button>
+            
         `;
     }
 }
@@ -273,6 +290,34 @@ async function deleteTask(taskId) {
         console.error("Error deleting task:", error);
     }
 }
+
+function generatePublicLink(taskId) {
+    console.log(`Task ID received: ${taskId}`);
+    fetch(`/createPublicLink/${taskId}`, { method: 'POST' })
+        .then(response => {
+            console.log(`Response status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (data.publicLink) {
+                navigator.clipboard.writeText(data.publicLink)
+                    .then(() => {
+                        console.log('Public link copied to clipboard');
+                        alert('Public link copied to clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Error copying to clipboard:', err);
+                        alert('Failed to copy the link.');
+                    });
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error generating public link:', error);
+        });
+}
+
 
 window.onload = async () => {
     await getUserId();

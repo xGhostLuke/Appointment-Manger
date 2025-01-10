@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Don't have an account? Register";
     });
 
-    // Handle Login Form Submission
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -26,13 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const result = await response.json();
         if (result.success) {
-            window.location.href = '/taskpage';  // Redirect to index.html after successful login
+            window.location.href = '/taskpage';
         } else {
             alert(result.error || "Login failed.");
         }
     });
 
-    // Handle Register Form Submission
     registerForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -53,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const result = await response.json();
         if (result.success) {
-            window.location.href = '/taskpage';  // Redirect to index.html after successful registration
+            window.location.href = '/taskpage';
         } else {
             alert(result.error || "Registration failed.");
         }

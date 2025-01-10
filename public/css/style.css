@@ -223,6 +223,13 @@ button:active {
     border: 1px solid #ff0800 !important;
 }
 
+.tasks li.highlight-status {
+    background-color: #e77102 !important;
+    color: white !important;
+    font-weight: bold !important;
+    border: 1px solid #e77102 !important;
+}
+
 .logoutButton {
     position: absolute;
     top: 15px;
