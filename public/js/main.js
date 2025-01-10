@@ -3,6 +3,7 @@ const taskDetails = document.querySelector(".selected_task");
 const addTaskButton = document.querySelector(".inputFields button");
 const inputs = document.querySelectorAll(".inputFields input");
 const logoutButton = document.querySelector(".logoutButton");
+const userEmail = document.getElementById("userEmail")
 
 let tasks = [];
 let nextId = 1;
@@ -268,5 +269,6 @@ async function deleteTask(taskId) {
 
 window.onload = async () => {
     await getUserId();
+    userEmail.textContent = await getEmailByUserId(userId);
     renderTaskList();
 };
