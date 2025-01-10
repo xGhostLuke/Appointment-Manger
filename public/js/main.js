@@ -193,14 +193,14 @@ async function displayTaskDetails(taskId) {
         `;
     } else if (task.public && !isOwner) {
         taskDetails.innerHTML += `
-            <button onclick="joinTask(${task.id})">Join Task</button>
+            <button onclick="joinTask(${task.id})">Join Appointment</button>
         `;
     }
 
     if (isOwner) {
         taskDetails.innerHTML += `
-            <button onclick="markTaskDone(${task.id})">Cancel Task</button>
-            <button onclick="deleteTask(${task.id})">Delete Task</button>
+            <button onclick="markTaskDone(${task.id})">Cancel Appointment</button>
+            <button onclick="deleteTask(${task.id})">Delete Appointment</button>
         `;
     }
 
