@@ -11,7 +11,7 @@
 
 <body>
     <div class="header">
-        <h1>ToDo List </h1>
+        <h1>Appointment Manager </h1>
         <p1>by Lukas Reißland</p1>
     </div>
     <button class="logoutButton">logout</button>
@@ -25,11 +25,18 @@
         <label for="location">Location</label>
         <input type="text" id="location">
 
+        <label for="time">Time</label>
+        <input type="text" id="time">
+
         <label for="deadline">Deadline</label>
         <input type="date" id="deadline">
 
         <label for="registrationDeadline">Registration Deadline</label>
         <input type="date" id="registrationDeadline">
+
+        <label for="isPublic">Make this task public</label>
+        <input type="checkbox" id="isPublic" name="isPublic">
+
         <button>Add Task</button>
     </div>
 
@@ -39,8 +46,8 @@
         </div>
 
         <div class="selected_task">
-            <h2>Task Details</h2>
-            <p>Select a task to view details</p>
+            <h2>Appointment Details</h2>
+            <p>Select an Appointment to view details</p>
         </div>
     </div>
 </body>

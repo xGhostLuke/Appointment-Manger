@@ -23,36 +23,54 @@ app.get('/', (req, res) => {
 });
 
 app.get('/taskpage', (req, res) => {
+  if (!userId) {
+    return res.sendFile(path.join(__dirname, 'views', 'login.html'));
+  }
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-app.get('/tasks', async (req, res) => {
+app.get('/user', (req, res) => {
+  if (!userId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+  res.json({ userId });
+});
 
+
+app.get('/tasks', async (req, res) => {
   if (!userId) {
     return res.status(403).json({ error: 'You must be logged in to view tasks' });
   }
 
   try {
-    const tasks = await Task.find({ userId }).sort({ id: 1 });  
+    const tasks = await Task.find({
+      $or: [
+        { userId },  // Tasks created by the logged-in user
+        { public: true }  // Public tasks
+      ]
+    }).sort({ id: 1 });
+
     res.json(tasks);
   } catch (err) {
+    console.error("Error fetching tasks:", err);
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 });
 
 
 app.get('/tasks/:task_id', async (req, res) => {
-  const userId = req.session.userId;
   const taskId = parseInt(req.params.task_id, 10);
 
-  if (!userId) {
-    return res.status(403).json({ error: 'You must be logged in to view task details' });
-  }
-
   try {
-    const task = await Task.findOne({ id: taskId, userId });
+    const task = await Task.findOne({ id: taskId });
+
     if (!task) {
-      return res.status(404).json({ error: 'Task not found or you are not authorized to view this task' });
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Only the owner can see non-public tasks
+    if (!task.public && task.userId !== req.session.userId) {
+      return res.status(403).json({ error: 'You are not authorized to view this task' });
     }
 
     res.json(task);
@@ -62,8 +80,8 @@ app.get('/tasks/:task_id', async (req, res) => {
 });
 
 app.post('/tasks', async (req, res) => {
-  const { title, description, location, registrationDeadline, deadline } = req.body;
-  
+  const { title, description, location, time, registrationDeadline, deadline, isPublic } = req.body;
+
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
@@ -78,18 +96,22 @@ app.post('/tasks', async (req, res) => {
       title,
       description,
       location,
+      time,
       registrationDeadline,
       deadline,
       userId,  // Associate the task with the logged-in user
+      public: isPublic || false,  // Use the isPublic field from the request, defaulting to false
     });
 
     const savedTask = await newTask.save();
+
+    console.log("Task created:", savedTask); // Log task data to confirm it's being saved
     res.status(201).json(savedTask);
   } catch (err) {
+    console.error("Error saving task:", err);
     res.status(500).json({ error: 'Failed to save task' });
   }
 });
-
 
 app.put('/tasks/:task_id', async (req, res) => {
   const taskId = parseInt(req.params.task_id, 10);

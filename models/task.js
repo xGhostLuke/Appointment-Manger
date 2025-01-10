@@ -6,9 +6,11 @@ const taskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   location: { type: String },
+  time: { type: String},
   registrationDeadline: { type: String },
   deadline: { type: String },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  public: { type: Boolean, default: false }
 });
 
 const Task = mongoose.model('Task', taskSchema);
