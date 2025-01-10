@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt')
 var userId = 0;
 var currentUser = "";
 
+let registrations = [];
+
 mongoose.connect('mongodb://localhost:27017/tasksDB', {})
   .then(() => {
     console.log('Connected to MongoDB');
@@ -240,6 +242,31 @@ app.post('/join-task/:taskId', async (req, res) => {
   } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Error joining task' });
+  }
+});
+
+app.post('/joinforeign/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+  const { firstName, lastName, email } = req.body;
+
+  if (!firstName || !lastName || !email) {
+      return res.status(400).json({ error: "First name, last name and email are required!" });
+  }
+
+  try {
+      const task = await Task.findOne({ id: taskId });
+      if (!task) {
+          return res.status(404).json({ error: "Task not found" });
+      }
+
+      task.foreignparticipants.push({ firstName, lastName, email});
+
+      await task.save();
+
+      res.status(200).json({ message: "Successfully registered for the appointment" });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
   }
 });
 

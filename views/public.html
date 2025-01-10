@@ -11,18 +11,30 @@
 
 <body>
     <div class="header">
-        <h1>Appointment Manager </h1>
-        <p1>by Lukas Reißland</p1>
+        <h1>Appointment Manager</h1>
+        <p>by Lukas Reißland</p>
     </div>
 
     <div class="container">
         <div class="tasks">
             <ul></ul>
         </div>
-        <a class="registerLink" href="/">Login/Register to create and join Appointments!</a>
+        <a class="registerLink" href="/">Login/Register to create Appointments!</a>
         <div class="selected_task">
             <h2>Appointment Details</h2>
-            <p>Select an Appointment to view details</p>
+            <p>Select an Appointment to register</p>
+            <div class="register-form hidden">
+                <h3>Register for this Appointment</h3>
+                <form id="appointment-registration">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name="first-name" required>
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name="last-name" required>
+                    <label for="email">EMail:</label>
+                    <input type="text" id="email" name="email" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>

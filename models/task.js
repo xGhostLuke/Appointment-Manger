@@ -12,6 +12,11 @@ const taskSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   public: { type: Boolean, default: false },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  foreignparticipants: [{
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: {type : String, required: true},
+  }]
 });
 
 

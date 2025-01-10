@@ -1,10 +1,7 @@
 const taskList = document.querySelector(".tasks ul");
 const taskDetails = document.querySelector(".selected_task");
-const addTaskButton = document.querySelector(".inputFields button");
-const inputs = document.querySelectorAll(".inputFields input");
 
 let tasks = [];
-let nextId = 1;
 
 async function renderTaskList() {
     try {
@@ -57,7 +54,51 @@ function displayTaskDetails(taskId) {
         <p><strong>Registration Deadline:</strong> ${task.registrationDeadline}</p>
         <p><strong>Status:</strong> ${task.status}</p>
         <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}</p>
+        <div class="register-form">
+            <h3>Register for this Appointment</h3>
+            <form id="registration-form">
+                <label for="first-name">First Name:</label>
+                <input type="text" id="first-name" name="first-name" required>
+                <label for="last-name">Last Name:</label>
+                <input type="text" id="last-name" name="last-name" required>
+                <label for="email">EMail:</label>
+                <input type="text" id="email" name="email" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
     `;
+
+    const registrationForm = document.getElementById("registration-form");
+    registrationForm.addEventListener("submit", (event) => handleRegistration(event, taskId));
+}
+
+async function handleRegistration(event, taskId) {
+    event.preventDefault();
+
+    const firstName = document.getElementById("first-name").value;
+    const lastName = document.getElementById("last-name").value;
+    const email = document.getElementById("email").value;
+
+    try {
+        const response = await fetch(`/joinforeign/${taskId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ firstName, lastName, email })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to register for the appointment");
+        }
+
+        alert("You have successfully registered for the appointment!");
+    } catch (error) {
+        console.error("Error registering for appointment:", error);
+        alert("An error occurred while registering. Please try again.");
+    }
+
+    event.target.reset();
 }
 
 window.onload = renderTaskList;

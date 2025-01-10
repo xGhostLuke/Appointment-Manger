@@ -150,7 +150,7 @@ async function displayTaskDetails(taskId) {
         <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}</p>
     `;
 
-    if (task.participants && task.participants.length > 0) {
+    if (task.foreignparticipants.length > 0 || task.participants && task.participants.length > 0) {
         taskDetails.innerHTML += `<h3>Participants:</h3><ul>`;
         
         for (const participantId of task.participants) {
@@ -162,6 +162,13 @@ async function displayTaskDetails(taskId) {
             }
         }
 
+        if (task.foreignparticipants && task.foreignparticipants.length > 0) {
+            for (const participant of task.foreignparticipants) {
+                const { firstName, lastName, email } = participant;
+                taskDetails.innerHTML += `<li>${firstName} ${lastName} ${email}</li>`;
+            }
+        }
+        
         taskDetails.innerHTML += `</ul>`;
     } else {
         taskDetails.innerHTML += `<p>No participants yet.</p>`;
