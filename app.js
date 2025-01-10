@@ -6,6 +6,7 @@ const User = require('./models/user')
 const app = express();
 const bcrypt = require('bcrypt')
 var userId = 0;
+var currentUser = "";
 
 mongoose.connect('mongodb://localhost:27017/tasksDB', {})
   .then(() => {
@@ -60,9 +61,12 @@ app.get('/tasks', async (req, res) => {
 
 app.get('/tasks/:task_id', async (req, res) => {
   const taskId = parseInt(req.params.task_id, 10);
+  
 
   try {
-    const task = await Task.findOne({ id: taskId });
+    const task = await Task.findOne({ id: taskId })
+      .populate('participants', 'email').exec;
+      console.log("Populated Task:", task)
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
@@ -171,6 +175,24 @@ app.get('/pubtasks', async (req, res) => {
   }
 });
 
+app.get('/user/email/:userId', async (req, res) => {
+  const { userId } = req.params;  // Get the userId from the request parameters
+
+  try {
+    // Find the user by the provided userId (MongoDB _id)
+    const user = await User.findById(userId); 
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return the email field of the user
+    res.json({ email: user.email });
+  } catch (err) {
+    console.error('Error fetching user:', err);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
 
 
 app.post('/register', async (req, res) => {
@@ -188,10 +210,42 @@ app.post('/register', async (req, res) => {
       const user = new User({ email, password });
       await user.save();
       userId = user._id; 
+      currentUser = email;
       res.json({ success: true });
   } catch (err) {
       console.error('Error registering user:', err);
       res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+// Join task
+app.post('/join-task/:taskId', async (req, res) => {
+  const taskId = req.params.taskId;
+
+  if (!userId) {
+      return res.status(403).json({ error: 'You must be logged in to participate' });
+  }
+
+  try {
+      const task = await Task.findOne({ id: taskId });
+
+      if (!task) {
+          return res.status(404).json({ error: 'Task not found' });
+      }
+
+      // Check if the user has already joined this task
+      if (task.participants.includes(userId)) {
+          return res.status(400).json({ message: 'You have already joined this task' });
+      }
+
+      // Add the user to the participants list
+      task.participants.push(userId);
+      await task.save();
+
+      res.status(200).json({ message: 'Successfully joined the task' });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error joining task' });
   }
 });
 
@@ -210,6 +264,7 @@ app.post('/login', async (req, res) => {
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (isPasswordCorrect) {
           userId = user._id; 
+          currentUser = email;
           res.json({ success: true });
       } else {
           res.status(400).json({ error: 'Invalid password' });

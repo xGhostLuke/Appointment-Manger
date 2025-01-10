@@ -49,14 +49,13 @@ footer {
 }
 
 footer a {
-    color: #ffcc00; /* Adjust the link color */
+    color: #ffcc00;
     text-decoration: none;
 }
 
 footer a:hover {
     text-decoration: underline;
 }
-
 
 h1 {
     font-size: 24px;
@@ -243,13 +242,10 @@ button:active {
     flex-direction: column;
     align-items: center;
     font-size: 18px;
-    margin-top: 20px; /* Optional space above */
+    margin-top: 20px;
     width: 100%;
     margin-left: 34%;
     max-width: 400px;
     text-align: center;
     color: black;
 }
-
-
-

@@ -10,8 +10,10 @@ const taskSchema = new mongoose.Schema({
   registrationDeadline: { type: String },
   deadline: { type: String },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  public: { type: Boolean, default: false }
+  public: { type: Boolean, default: false },
+  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
+
 
 const Task = mongoose.model('Task', taskSchema);
 module.exports = Task;

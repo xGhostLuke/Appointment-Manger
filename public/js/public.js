@@ -11,36 +11,31 @@ async function renderTaskList() {
         const response = await fetch("/pubtasks");
         tasks = await response.json();
 
-        console.log("Tasks fetched from server:", tasks);
+        taskList.innerHTML = tasks.length === 0 ? "<li>No public Appointments</li>" : '';
 
-        taskList.innerHTML = "";
-        if (tasks.length === 0) {
-            taskList.innerHTML = "<li>No public Appointments</li>";
-        } else {
-            tasks.forEach((task) => {
-                const listItem = document.createElement("li");
-                const taskDeadline = new Date(task.deadline);
-                const currentDate = new Date();
-                const timeDiff = taskDeadline - currentDate;
-                const oneDayInMillis = 24 * 60 * 60 * 1000;
+        tasks.forEach((task) => {
+            const listItem = document.createElement("li");
+            const taskDeadline = new Date(task.deadline);
+            const currentDate = new Date();
+            const timeDiff = taskDeadline - currentDate;
+            const oneDayInMillis = 24 * 60 * 60 * 1000;
 
-                const isDeadlineSoon = timeDiff <= oneDayInMillis && timeDiff > 0;
+            const isDeadlineSoon = timeDiff <= oneDayInMillis && timeDiff > 0;
 
-                listItem.innerHTML = `
-                    <strong>${task.title}</strong><br>
-                    ${task.public ? '<span>Public</span><br>' : ''}
-                    Status: ${task.status}<br>
-                    Deadline: ${task.deadline}
-                `;
+            listItem.innerHTML = `
+                <strong>${task.title}</strong><br>
+                ${task.public ? '<span>Public</span><br>' : ''}
+                Status: ${task.status}<br>
+                Deadline: ${task.deadline}
+            `;
 
-                if (isDeadlineSoon) {
-                    listItem.classList.add("highlight-deadline");
-                }
+            if (isDeadlineSoon) {
+                listItem.classList.add("highlight-deadline");
+            }
 
-                listItem.addEventListener("click", () => displayTaskDetails(task.id));
-                taskList.appendChild(listItem);
-            });
-        }
+            listItem.addEventListener("click", () => displayTaskDetails(task.id));
+            taskList.appendChild(listItem);
+        });
     } catch (error) {
         console.error("Error fetching tasks:", error);
     }
@@ -53,8 +48,6 @@ function displayTaskDetails(taskId) {
         return;
     }
 
-    const isOwner = task.userId === window.userId;  // Check if the logged-in user is the task owner
-
     taskDetails.innerHTML = `
         <h2>Appointment Details</h2>
         <p><strong>Title:</strong> ${task.title}</p>
@@ -64,7 +57,7 @@ function displayTaskDetails(taskId) {
         <p><strong>Deadline:</strong> ${task.deadline}</p>
         <p><strong>Registration Deadline:</strong> ${task.registrationDeadline}</p>
         <p><strong>Status:</strong> ${task.status}</p>
-        <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}
+        <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}</p>
     `;
 }
 

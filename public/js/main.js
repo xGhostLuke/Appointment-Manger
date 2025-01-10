@@ -2,7 +2,7 @@ const taskList = document.querySelector(".tasks ul");
 const taskDetails = document.querySelector(".selected_task");
 const addTaskButton = document.querySelector(".inputFields button");
 const inputs = document.querySelectorAll(".inputFields input");
-const logoutButton = document.querySelector(".logoutButton")
+const logoutButton = document.querySelector(".logoutButton");
 
 let tasks = [];
 let nextId = 1;
@@ -56,25 +56,37 @@ addTaskButton.addEventListener("click", async () => {
     }
 });
 
+async function getEmailByUserId(userId) {
+    try {
+        const response = await fetch(`/user/email/${userId}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data.email;
+        } else {
+            console.error("Error: User not found or something went wrong.");
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching email:', error);
+        return null;
+    }
+}
+
 async function getUserId() {
     try {
-      const response = await fetch('/user');
-      const data = await response.json();
-      if (data.userId) {
-        userId = data.userId;
-      } else {
-        window.location.href = '/'; // Redirect to login
-      }
+        const response = await fetch('/user');
+        const data = await response.json();
+        if (data.userId) {
+            userId = data.userId;
+        } else {
+            window.location.href = '/'; // Redirect to login
+        }
     } catch (error) {
-      console.error('Error fetching user ID:', error);
-      window.location.href = '/'; // Redirect to login
+        console.error('Error fetching user ID:', error);
+        window.location.href = '/'; // Redirect to login
     }
-  }
-  
-  window.onload = async () => {
-    await getUserId();
-    renderTaskList();
-  };
+}
 
 async function renderTaskList() {
     try {
@@ -89,7 +101,7 @@ async function renderTaskList() {
         } else {
             tasks.forEach((task) => {
                 const listItem = document.createElement("li");
-                const isOwner = task.userId === userId; // Compare with global userId
+                const isOwner = task.userId === window.userId;
                 const taskDeadline = new Date(task.deadline);
                 const currentDate = new Date();
                 const timeDiff = taskDeadline - currentDate;
@@ -116,16 +128,14 @@ async function renderTaskList() {
     }
 }
 
-
-
-function displayTaskDetails(taskId) {
+async function displayTaskDetails(taskId) {
     const task = tasks.find(task => task.id === taskId);
     if (!task) {
         console.error("Task not found");
         return;
     }
 
-    const isOwner = task.userId === window.userId;  // Check if the logged-in user is the task owner
+    const isOwner = task.userId === userId;
 
     taskDetails.innerHTML = `
         <h2>Appointment Details</h2>
@@ -136,11 +146,59 @@ function displayTaskDetails(taskId) {
         <p><strong>Deadline:</strong> ${task.deadline}</p>
         <p><strong>Registration Deadline:</strong> ${task.registrationDeadline}</p>
         <p><strong>Status:</strong> ${task.status}</p>
-          <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}
+        <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}</p>
+    `;
 
-        <button onclick="markTaskDone(${task.id})">Cancel Appointment</button>
-        <button onclick="deleteTask(${task.id})">Delete</button>`
+    if (task.participants && task.participants.length > 0) {
+        taskDetails.innerHTML += `<h3>Participants:</h3><ul>`;
+        
+        for (const participantId of task.participants) {
+            const email = await getEmailByUserId(participantId);
+            if (email) {
+                taskDetails.innerHTML += `<li>${email}</li>`;
+            } else {
+                taskDetails.innerHTML += `<li>Could not fetch email</li>`;
+            }
+        }
 
+        taskDetails.innerHTML += `</ul>`;
+    } else {
+        taskDetails.innerHTML += `<p>No participants yet.</p>`;
+    }
+
+    if (task.public && !isOwner) {
+        taskDetails.innerHTML += `
+            <button onclick="joinTask(${task.id})">Join Task</button>
+        `;
+    }
+
+    if (isOwner) {
+        taskDetails.innerHTML += `
+            <button onclick="markTaskDone(${task.id})">Cancel Task</button>
+            <button onclick="deleteTask(${task.id})">Delete Task</button>
+        `;
+    }
+}
+
+async function joinTask(taskId) {
+    try {
+        const response = await fetch(`/join-task/${taskId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert('Successfully joined the task!');
+            renderTaskList();
+        } else {
+            alert(result.message || 'Failed to join the task');
+        }
+    } catch (error) {
+        console.error("Error joining task:", error);
+    }
 }
 
 async function markTaskDone(taskId) {
@@ -201,4 +259,7 @@ async function deleteTask(taskId) {
     }
 }
 
-window.onload = renderTaskList;
+window.onload = async () => {
+    await getUserId();
+    renderTaskList();
+};
