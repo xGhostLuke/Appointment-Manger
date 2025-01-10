@@ -249,3 +249,13 @@ button:active {
     text-align: center;
     color: black;
 }
+
+.dButton {
+    background-color: gray;
+    color: white;
+    border: none;
+    cursor: not-allowed;
+    padding: 10px;
+    font-size: 14px;
+    cursor: not-allowed;
+}

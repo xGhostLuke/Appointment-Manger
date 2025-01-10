@@ -80,11 +80,11 @@ async function getUserId() {
         if (data.userId) {
             userId = data.userId;
         } else {
-            window.location.href = '/'; // Redirect to login
+            window.location.href = '/';
         }
     } catch (error) {
         console.error('Error fetching user ID:', error);
-        window.location.href = '/'; // Redirect to login
+        window.location.href = '/'; 
     }
 }
 
@@ -102,7 +102,7 @@ async function renderTaskList() {
             tasks.forEach((task) => {
                 const listItem = document.createElement("li");
                 const isOwner = task.userId === window.userId;
-                const taskDeadline = new Date(task.deadline);
+                const taskDeadline = new Date(task.registrationDeadline);
                 const currentDate = new Date();
                 const timeDiff = taskDeadline - currentDate;
                 const oneDayInMillis = 24 * 60 * 60 * 1000;
@@ -166,7 +166,14 @@ async function displayTaskDetails(taskId) {
         taskDetails.innerHTML += `<p>No participants yet.</p>`;
     }
 
-    if (task.public && !isOwner) {
+    const registrationDeadline = new Date(task.registrationDeadline);
+    const currentDate = new Date();
+
+    if (currentDate >= registrationDeadline && !isOwner) {
+        taskDetails.innerHTML += `
+            <button class=dButton>Registration Deadline Passed</button>
+        `;
+    } else if (task.public && !isOwner) {
         taskDetails.innerHTML += `
             <button onclick="joinTask(${task.id})">Join Task</button>
         `;

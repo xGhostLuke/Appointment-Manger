@@ -24,7 +24,6 @@ async function renderTaskList() {
 
             listItem.innerHTML = `
                 <strong>${task.title}</strong><br>
-                ${task.public ? '<span>Public</span><br>' : ''}
                 Status: ${task.status}<br>
                 Deadline: ${task.deadline}
             `;

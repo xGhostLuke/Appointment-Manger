@@ -46,8 +46,8 @@ app.get('/tasks', async (req, res) => {
   try {
     const tasks = await Task.find({
       $or: [
-        { userId },  // Tasks created by the logged-in user
-        { public: true }  // Public tasks
+        { userId },  
+        { public: true } 
       ]
     }).sort({ id: 1 });
 
@@ -72,7 +72,6 @@ app.get('/tasks/:task_id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Only the owner can see non-public tasks
     if (!task.public && task.userId !== req.session.userId) {
       return res.status(403).json({ error: 'You are not authorized to view this task' });
     }
@@ -103,13 +102,13 @@ app.post('/tasks', async (req, res) => {
       time,
       registrationDeadline,
       deadline,
-      userId,  // Associate the task with the logged-in user
-      public: isPublic || false,  // Use the isPublic field from the request, defaulting to false
+      userId,  
+      public: isPublic || false,
     });
 
     const savedTask = await newTask.save();
 
-    console.log("Task created:", savedTask); // Log task data to confirm it's being saved
+    console.log("Task created:", savedTask);
     res.status(201).json(savedTask);
   } catch (err) {
     console.error("Error saving task:", err);
@@ -168,7 +167,7 @@ app.get('/public-tasks', async (req, res) => {
 app.get('/pubtasks', async (req, res) => {
   try {
     const publicTasks = await Task.find({ public: true });
-    res.json(publicTasks); // Send tasks as JSON response
+    res.json(publicTasks);
   } catch (err) {
     console.error('Error fetching public tasks:', err);
     res.status(500).send('Internal Server Error');
@@ -176,17 +175,15 @@ app.get('/pubtasks', async (req, res) => {
 });
 
 app.get('/user/email/:userId', async (req, res) => {
-  const { userId } = req.params;  // Get the userId from the request parameters
+  const { userId } = req.params;
 
   try {
-    // Find the user by the provided userId (MongoDB _id)
     const user = await User.findById(userId); 
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Return the email field of the user
     res.json({ email: user.email });
   } catch (err) {
     console.error('Error fetching user:', err);
@@ -218,7 +215,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Join task
 app.post('/join-task/:taskId', async (req, res) => {
   const taskId = req.params.taskId;
 
@@ -233,12 +229,10 @@ app.post('/join-task/:taskId', async (req, res) => {
           return res.status(404).json({ error: 'Task not found' });
       }
 
-      // Check if the user has already joined this task
       if (task.participants.includes(userId)) {
-          return res.status(400).json({ message: 'You have already joined this task' });
+          return res.status(400).json({ message: 'You have already joined this appointment' });
       }
 
-      // Add the user to the participants list
       task.participants.push(userId);
       await task.save();
 
