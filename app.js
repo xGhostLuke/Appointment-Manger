@@ -92,7 +92,7 @@ app.post('/tasks', async (req, res) => {
 
     const newTask = new Task({
       id: newId,
-      status: '[WIP]',
+      status: 'active',
       title,
       description,
       location,
@@ -149,6 +149,29 @@ app.delete('/tasks/:task_id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
+
+app.get('/public-tasks', async (req, res) => {
+  try {
+    const publicTasks = await Task.find({ public: true });
+
+    res.sendFile(path.join(__dirname, 'views', 'public.html'));
+  } catch (err) {
+    console.error('Error fetching public tasks:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/pubtasks', async (req, res) => {
+  try {
+    const publicTasks = await Task.find({ public: true });
+    res.json(publicTasks); // Send tasks as JSON response
+  } catch (err) {
+    console.error('Error fetching public tasks:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;

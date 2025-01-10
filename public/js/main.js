@@ -34,7 +34,7 @@ addTaskButton.addEventListener("click", async () => {
         time,
         deadline,
         registrationDeadline,
-        status: "WIP",
+        status: "active",
         isPublic: isPublic
     };
 
@@ -99,7 +99,6 @@ async function renderTaskList() {
 
                 listItem.innerHTML = `
                     <strong>${task.title}</strong><br>
-                    ${task.public ? '<span>Public</span><br>' : ''}
                     Status: ${task.status}<br>
                     Deadline: ${task.deadline}
                 `;
@@ -137,9 +136,9 @@ function displayTaskDetails(taskId) {
         <p><strong>Deadline:</strong> ${task.deadline}</p>
         <p><strong>Registration Deadline:</strong> ${task.registrationDeadline}</p>
         <p><strong>Status:</strong> ${task.status}</p>
-        <p><strong>Public:</strong> ${task.isPublic}</p>
+          <p><strong>Public:</strong> ${task.public ? "Yes" : "No"}
 
-        <button onclick="markTaskDone(${task.id})">Mark Done</button>
+        <button onclick="markTaskDone(${task.id})">Cancel Appointment</button>
         <button onclick="deleteTask(${task.id})">Delete</button>`
 
 }
@@ -152,14 +151,14 @@ async function markTaskDone(taskId) {
             return;
         }
 
-        task.status = "Done";
+        task.status = "canceled";
 
         const response = await fetch(`/tasks/${taskId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ status: "Done" }),
+            body: JSON.stringify({ status: "canceled" }),
         });
 
         if (!response.ok) {
@@ -172,7 +171,7 @@ async function markTaskDone(taskId) {
         renderTaskList();
         taskDetails.innerHTML = "";
     } catch (error) {
-        console.error("Error marking task as done:", error);
+        console.error("Error marking task as canceled:", error);
     }
 }
 

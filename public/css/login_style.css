@@ -5,6 +5,24 @@
     box-sizing: border-box;
 }
 
+.header {
+    width: 100%;
+    background-color: #6a7fd1;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 48px;
+    color: #000000;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-align: center;
+    margin: 20px 0;
+}
+
 @keyframes moveBackground {
     0% {
         background-position: 0% 0%;
@@ -55,6 +73,7 @@ h1 {
     position: relative;
     top: 250px;
     padding: 25px;
+    padding-bottom: 10px;
     background-color: #819afc;
 }
 
@@ -119,4 +138,10 @@ a:hover {
         width: 100%;
         padding: 20px;
     }
+}
+
+.publicLink {
+    color: black;
+    text-align: center;
+    padding-top: 10px;
 }
