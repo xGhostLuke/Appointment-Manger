@@ -11,7 +11,6 @@ A simple tool to manage and organize your appointments.
 1. Clone the repository:
    ```bash
    git clone https://github.com/xGhostLuke/Appointment-Manger.git
-   cd appointment-manager
    ```
 
 2. Install dependencies:
