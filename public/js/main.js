@@ -103,7 +103,7 @@ async function renderTaskList() {
 
         taskList.innerHTML = "";
         if (tasks.length === 0) {
-            taskList.innerHTML = "<li>No tasks available</li>";
+            taskList.innerHTML = "<li>No appointments available</li>";
         } else {
             tasks.forEach((task) => {
                 const listItem = document.createElement("li");
@@ -114,7 +114,7 @@ async function renderTaskList() {
                 const oneDayInMillis = 24 * 60 * 60 * 1000;
                 const status = task.status;
 
-                const isDeadlineSoon = timeDiff <= oneDayInMillis && timeDiff > 0;
+                const isDeadlineSoon = timeDiff <= oneDayInMillis;
 
                 listItem.innerHTML = `
                     <strong>${task.title}</strong><br>

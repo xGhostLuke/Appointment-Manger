@@ -12,22 +12,26 @@ async function renderTaskList() {
 
         tasks.forEach((task) => {
             const listItem = document.createElement("li");
-            const taskDeadline = new Date(task.deadline);
-            const currentDate = new Date();
-            const timeDiff = taskDeadline - currentDate;
-            const oneDayInMillis = 24 * 60 * 60 * 1000;
+                const taskDeadline = new Date(task.registrationDeadline);
+                const currentDate = new Date();
+                const timeDiff = taskDeadline - currentDate;
+                const oneDayInMillis = 24 * 60 * 60 * 1000;
 
-            const isDeadlineSoon = timeDiff <= oneDayInMillis && timeDiff > 0;
+                const isDeadlineSoon = timeDiff <= oneDayInMillis;
 
-            listItem.innerHTML = `
-                <strong>${task.title}</strong><br>
-                Status: ${task.status}<br>
-                Deadline: ${task.deadline}
-            `;
+                listItem.innerHTML = `
+                    <strong>${task.title}</strong><br>
+                    Status: ${task.status}<br>
+                    Deadline: ${task.deadline}
+                `;
 
-            if (isDeadlineSoon) {
-                listItem.classList.add("highlight-deadline");
-            }
+                if (isDeadlineSoon) {
+                    listItem.classList.add("highlight-deadline");
+                }
+
+                if (task.status === "canceled") {
+                    listItem.classList.add("highlight-status");
+                }
 
             listItem.addEventListener("click", () => displayTaskDetails(task.id));
             taskList.appendChild(listItem);
